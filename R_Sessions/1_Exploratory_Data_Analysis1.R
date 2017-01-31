@@ -39,6 +39,21 @@ sum(hist1$counts) #see that the counts add up to your total number of data point
 plot(hist1)     # and then replot it again later like this
 
 
+#Make a kernel density plot
+# Here are two additiona link illustrating kernel density esimates
+# http://www.mvstat.net/tduong/research/seminars/seminar-2001-05/ 
+# http://www.mglerner.com/blog/?p=28
+d=density(rainfall$precip)
+# take a look at what comes out
+d #this is just a summary do ?density to see how you can get more useful information
+lines(d$x, d$y, col='red') #add the kernel density estimate to the histogram... why didn't that work?
+#replot the histogram as density
+hist1=hist(rainfall$precip, freq=F, breaks=seq(0,8000,100), ylim=c(0,6e-4), plot=T, xlab="Annual Precip [mm]", ylab="Probability Density", main="Annual Precipitation") 
+lines(d$x, d$y, col='red')
+d1=density(rainfall$precip, adjust=1, kernel='rectangular') #experiment with different Kernels and bandwithds
+lines(d1$x, d1$y,col='blue')
+
+
 #Make a boxplot
 boxplot(rainfall$precip) #boxplot with default parmeters, look at ?boxplot to see what R did
 boxplot(rainfall$precip, range=0) #making the whiskers extend to the max and min
@@ -61,9 +76,9 @@ lines(precip_sort, precip_prob, col='red', lty=3, lwd=2)
 #Central Tendancy
 ###############################################################
 #mean
-mean=mean(rainfall$precip) 
+mean0=mean(rainfall$precip) 
 mean1=sum(rainfall$precip)/length(rainfall$precip)
-mean
+mean0
 mean1
 
 #trimmed mean
@@ -71,7 +86,7 @@ meanT10=mean(rainfall$precip, 0.1)
 meanT20=mean(rainfall$precip, 0.2)
 
 #median
-median=median(rainfall$precip)
+median0=median(rainfall$precip)
 median1=quantile(rainfall$precip, 0.5)
 if(np%%2==0){
 	print("length is even, taking the average of the center")
@@ -80,7 +95,7 @@ if(np%%2==0){
 	print("length is odd, grabbing the central point")
 	precip_sort[(np+1)/2]
 }
-median
+median0
 median1
 median2
 
@@ -101,18 +116,18 @@ legend('topright', legend=c("mean", "mean trim 10%", "mean trim 20%", "median"),
 #Spread
 ###############################################################
 #variance
-var=var(rainfall$precip) 
+var0=var(rainfall$precip) 
 var1=sum((rainfall$precip-mean(rainfall$precip))^2)/(np-1)
-var
+var0
 var1
 
 #Standard deviation
-sd= sd(rainfall$precip) 
-sd1=sqrt(var)
-sd2=var^0.5
-sd
-sd1
-sd2
+stdev= sd(rainfall$precip) 
+stdev1=sqrt(var)
+stdev2=var^0.5
+stdev
+stdev1
+stdev2
 
 #Interquartile range
 iqrP=IQR(rainfall$precip)
@@ -150,7 +165,7 @@ meadP1=median(abs(rainfall$precip-median(rainfall$precip)))
 meadP
 meadP1
 #trouble not matching again. 
-meadP2=mad(rainfall$precip, constant=1)
+meadP2=mad(rainfall$precip, constant=1)  #check the help for mad to see what the constant parameter does
 meadP2
 
 
@@ -158,5 +173,27 @@ meadP2
 hist(rainfall$precip, xlab="Annual Precip [mm]", ylab="Count")
 box()
 lines(x=quantile(rainfall$precip, c(0.25, 0.75)), y=c(30,30), col='red', lty=1, lwd=3) #Horizontal line for IQR
-lines(x=c(mean+sd, mean-sd), y=c(50,50), col='blue', lty=1, lwd=3) #Horizontal line for mean +/- 1 SD
+lines(x=c(mean0+stdev, mean0-stdev), y=c(50,50), col='blue', lty=1, lwd=3) #Horizontal line for mean+/- 1 SD
 legend('topright', legend=c("mean +/- 1 stdev", "IQR"), lty=rep(1,2), lwd=rep(1,3), col=c("blue", "Red" ))
+
+###############################################################
+#Skew
+###############################################################
+library('moments')
+sk0=skewness(rainfall$precip)
+sk1=(1/(np-1))*sum((rainfall$precip-mean(rainfall$precip))^3)/(sd(rainfall$precip)^3)
+#the difference has to do with the n-1 denominator you can see this by looking at the function
+skewness
+
+#Yule-Kendall index
+quants=quantile(rainfall$precip, c(0.25, 0.5, 0.75))
+skYK=((quants[3]-quants[2])-(quants[2]-quants[1]))/(quants[3]-quants[1])
+
+#this is counterintuitve because YK give you a negative skew but the skewness is positive
+#But it makes sense if you look at the shape of the distribution
+hist(rainfall$precip, xlab="Annual Precip [mm]", ylab="Count")
+abline(v=quantile(rainfall$precip, 0.5), col=3, lwd=2, lty=1)
+abline(v=quantile(rainfall$precip, 0.25), col=2, lwd=2, lty=3)
+abline(v=quantile(rainfall$precip, 0.75), col=2, lwd=2, lty=3)
+abline(v=mean0, col=4, lty=1, lwd=2)
+legend('topright', legend=c("mean", "q25", "q50", "q75"), col=c(4,2,3,2), lty=c(1,3,1,3), lwd=rep(2,4))
