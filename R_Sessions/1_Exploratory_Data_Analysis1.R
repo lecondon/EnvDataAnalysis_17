@@ -1,6 +1,7 @@
 ###############################################################
 #Read in our example data
 ###############################################################
+setwd("/Users/lauracondon/Documents/EnvDataAnalysis_17_Git/R_Sessions")
 rainfall = read.csv("./rainfall.csv")
 
 ###############################################################
