@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output:
+  html_document: 
+    toc: yes
+  html_notebook: default
+---
+
+## Homework #1 - Boxplot Comparisons for Different Distributions
+## Megan Daley and Shiru Wang
+
+# I: Normal Distribution
+
+We created a normal distribution, with 100 values, a mean of 5 and standard deviation of 2, in order to demonstrate how the boxplot function presents these data. As shown on the histogram below, the data fall in a typical bell-shaped curve. The boxplot below shows the distribution, with the red line representing the calculated mean of the sample dataset. 
+
+```{r}
+normal1 <- rnorm(100, mean = 5, sd = 2)
+hist(normal1)
+median(normal1)
+boxplot(normal1)
+xbar <- mean(normal1)
+abline(h=xbar, col = 2)
+```
+
+# II: Normal Distribution, but with Extreme Outliers
+
+We created a second distribution based on the first, but added in 23 additional numbers to act as outliers. The histogram shows a roughly normal distribution but with a negative skew. The boxplot below shows the distribution, with the green line representing the calculated mean of the sample dataset. 
+
+
+```{r}
+normal2 <- c(normal1, 15, 15, 12, 11, 13, 13, 11, 6, 6, 4, 4, 3, 3, 2, 2, 2,-11,-11,-3,-5,-7,-8,-5)
+xbar2 <- mean(normal2)
+hist(normal2 ,breaks = 10)
+boxplot(normal2)
+abline(h = xbar2, col = 3)
+```
+
+# III: Uniform Distribution
+
+We generated a uniform random distribution ranging from -15 to 15,  with 100 values. The histogram shows a very even distribution. The boxplot below shows a positive skew distribution, with the blue line representing the calculated mean of the sample dataset.
+
+```{r}
+normal3 <-runif(100, min = -15, max = 15)
+xbar3 <- mean(normal3)
+hist(normal3 ,breaks = 10)
+boxplot(normal3)
+abline(h = xbar3, col = 4)
+```
+
+# IV: Combined Distributions
+
+In the end, we combined the normal distribution and the uniform distribution together. The histogram shows a distribution with a very clear negative skew. The tight boxplot below shows the distribution, with the light blue line representing the calculated mean of the sample dataset.
+
+```{r}
+normal4 <-c(normal3,normal2)
+xbar4 <- mean(normal4)
+hist(normal4 ,breaks = 10)
+boxplot(normal4)
+abline(h = xbar4, col = 5)
+```
+
+# Summary
+
+The plot below summarizes the four different distributions described above, and compares them side-by-side. The normal distribution boxplot is much more even and tighter than the uniform distribution. The difference between the normal distribution and the one with added outliers is all in the outer reaches of the plot. When boxplot function is used so that the arms reach the max and min values, it covers much more of the plot than when it only reaches the 25 and 75 quartiles. 
+
+```{r}
+boxplot(normal1,normal2,normal3,normal4,col = 2:5, range = 0)
+text(x = 1, y = 12, label = "Normal\n Dist", cex = 0.7)
+text(x = 2, y = -13, label = "Normal Dist\n & Outliers", cex = 0.7)
+text(x = 3.3, y = 12, label = "Uniform Dist", cex = 0.7)
+text(x = 4.3, y = -10,label = "Combined Dist", cex = 0.7)
+boxplot(normal1,normal2,normal3,normal4,col = 2:5)
+text(x = 1, y = 12, label = "Normal\n Dist", cex = 0.7)
+text(x = 2, y = -13, label = "Normal Dist\n & Outliers", cex = 0.7)
+text(x = 3.3, y = 12, label = "Uniform Dist", cex = 0.7)
+text(x = 4.3, y = -10,label = "Combined Dist", cex = 0.7)
+```

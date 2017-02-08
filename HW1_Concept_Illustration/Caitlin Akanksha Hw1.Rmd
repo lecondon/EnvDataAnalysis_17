@@ -1,0 +1,75 @@
+---
+title: 'Akanksha Caitlin HW1 '
+output:
+  html_document: default
+  html_notebook: default
+---
+
+###Testing the sensitivity of mean, variance and skew to outliers.
+
+We used the rainfall dataset from the class github site to test sensitivity of mean, variance and skewness.
+```{r readdata}
+rainfall<- read.csv("https://raw.githubusercontent.com/lecondon/EnvDataAnalysis_17/master/R_Sessions/rainfall.csv")
+
+#this is the whole precipitation dataset
+precip.all<- rainfall$precip
+```
+
+To identify outliers we used a box plot, which calculates outlying values outside 1.5 times the interquartile range.
+```{r boxplot}
+boxplot(precip.all, horizontal = T)
+bpdata <- boxplot(precip.all) 
+
+#this is the boxplot data
+bpdata
+
+#these are the outlier values
+outliers<- bpdata$out
+
+#removed outliers from the whole precipitation dataset
+which(precip.all %in% outliers)
+index<- which(precip.all %in% outliers)
+precip.clean<- precip.all[-index]
+
+#this is the cleaned dataset without outliers
+head(precip.clean)
+```
+All the outliers in this precipitation dataset are at the high end.
+
+####Running the mean for all the precipitation data and mean for data without outliers.
+```{r mean}
+meanprecip.all<-mean(precip.all)
+meanprecip.clean<- mean(precip.clean)
+
+#create a histogram with kernel density smoother and show each mean
+d<- density(precip.all)
+{hist(precip.all,freq=F,breaks=seq(0,8000,100), ylim=c(0,6e-4), plot=T, xlab="Annual Precip [mm]", ylab="Probability Density", main="Annual Precipitation") 
+lines(d$x, d$y, col='red')
+abline(v=meanprecip.all,col="blue")
+abline(v=meanprecip.clean,col="green")}
+```
+The mean decreased slightly when the outliers were removed.
+
+####Running the variance for all the precipitation data and variance for data without outliers
+```{r variance}
+varprecip.all<-var(precip.all)
+varprecip.clean<- var(precip.clean)
+
+#calculate percent change
+(varprecip.all-varprecip.clean)/varprecip.all
+```
+There is a 14% decrease in variance between the whole dataset and the dataset without outliers.
+ 
+####Running skew for the whole dataset and the dataset without outliers.
+```{r}
+library(moments)
+skewprecip.all<- skewness(precip.all)
+skewprecip.clean<- skewness(precip.clean)
+
+#show plot of cleaned dataset to see change in skew
+d<- density(precip.clean)
+{hist(precip.clean,freq=F,breaks=seq(0,8000,100), ylim=c(0,6e-4), plot=T, xlab="Annual Precip [mm]", ylab="Probability Density", main="Annual Precipitation") 
+lines(d$x, d$y, col='red')}
+```
+The whole precipitation dataset has a positve skew because there are extreme values on the high end, so it is being pulled towards right.
+The dataset without outliers has a negative skew beacuse there lot of small rain events, so it is being pulled towards left.

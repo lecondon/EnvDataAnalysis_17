@@ -1,0 +1,239 @@
+---
+title: "An Examination of Transformations of Skewed Datasets"
+output:
+  html_document: default
+---
+####*Emy Gaub and Amy Shaw*
+
+####*CIE 600: Environmental Data Analysis: Scripting Assignment 1*
+
+####*Feb 7, 2017*
+ 
+
+## Initial data
+We are starting with two simple datasets. "posskew" has positively skewed data and "negskew" has negatively skewed data. The positive skew data is a hypothetical counting of the number of times a week a small child cries at Disneyland. The negative skew data is a hypothetical counting of the number of times a week a mascot steps on a child at Disneyland. The two are mutually exclusive. 
+
+```{r}
+posskew = c(1, 2, 2, 3,3,3, 4,4,4,4, 5,5,5,5,5, 6,6,6,6,6,6,6,6,6,6,6,6,6, 7,7,7,7,7,7,7, 8,8,8,8,8,8,8, 9, 9, 9,9,9, 10,10, 10,10, 11,11,11, 11, 12 ,12, 13,13,13,13,13,13, 14,14, 17,21,23, 26, 17, 32, 36, 48, 38, 40, 47, 51, 52)
+
+posmean = mean(posskew) #calculating the mean of positive skew data
+posmed = median(posskew) #calculating the median of positive skew data
+
+negskew = c(1,2,3,4,4,5,6,6,7,7,7,8,9,10, 13, 14, 17, 20, 20 ,21, 21, 23, 23, 24, 24, 24, 24, 27, 27, 27, 27, 28, 28, 28, 29 ,29, 29, 29, 30,30,30,30,30,31,31,31,31,31,31,31,32,32,32,32,32,32,32, 32, 33,33,33,33,33,33,33, 34,34,34,34,34,34,35,35,35,35,35,35,37,38,39)
+
+negmean = mean(negskew) #calculating the mean of negative skew data
+negmed = median(negskew) #calculating the median of negative skew data
+```
+
+Next we plot the data sets on histograms with the mean and median values
+```{r}
+#plotting positive skew data
+hist(posskew, breaks = 21, xlab = "Number of Crying Children", ylab = "Frequency", main = "Positive Skew Data")
+abline(v=posmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=posmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#plotting negative skew data
+hist(negskew, breaks = 21, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Negative Skew Data")
+abline(v=negmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=negmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+```
+
+You can see here that for the positive skew data the mean is greater than the median and for the negative skew the median is greater tan the mean. 
+
+## Initial data transformed into log scale
+Now we will take the initial datasets and transform them into a log scale 
+
+```{r}
+#Transform positive data LOG
+
+#First we transform initial datasets into log
+logpos = log(posskew)
+plogmean = mean(logpos)
+plogmed = median(logpos)
+#make histogram of transformed data
+hist(logpos, breaks = 15, xlab = "Number of Children Crying", ylab = "Frequency", main = "Log Positive Skew Data")
+abline(v=plogmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=plogmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue")) 
+
+#Transform negative data LOG
+#transform negative data to log
+logneg = log(negskew)
+nlogmean = mean(logneg)
+nlogmed = median(logneg)
+#make histogram of transformed data
+hist(logneg, breaks = 15, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Log Negative Skew Data")
+abline(v=nlogmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nlogmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+```
+
+As can be seen in the histograms, the positive skew data follows a normal distribution but the mean stil stays greater then the median. The negative skewed data however is not normalized and shifts the mean and median towards more positive ranges. The negative skew mean remains less than the median. 
+
+## Initial data transformed with box-cox
+Now we will transofrm the data sets with a box-cox, having lambda equal to 3. 
+```{r}
+#first declare lambda L equal to 3
+L = 3
+
+#transform positive skew data 
+bcpos = (posskew^(L-1))/L
+pbcmean = mean(bcpos)
+pbcmed = median(bcpos)
+#make histogram 
+hist(bcpos, breaks = 15, xlab = "Number of Crying Children", ylab = "Frequency", main = "Box Cox Positive Skew Data")
+abline(v=pbcmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=pbcmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#transform negative skew data
+bcneg = (negskew^(L-1))/L
+nbcmean = mean(bcneg)
+nbcmed = median(bcneg)
+#make histogram
+hist(bcneg, breaks = 15, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Box Cox Negative Skew Data")
+abline(v=nbcmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nbcmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+```
+
+The positive skew data shifted toward the left with most transformed values being less than 50. The mean remains greater than the median. The negative skew data is more evenly distributed than before. The mean remains less than the median. 
+
+## Initial data transformed with standardized anomalies
+Next we transform the data with standardized anomalies. The mean is subtracted from each value and then divided by the standard deviation. 
+
+```{r}
+#Transform positive skew data
+#calculate the standard deviation of positive skew data
+std = sd(posskew)
+#calculate standardized anomalies for positive skew
+z = (posskew - posmean)/std
+pzmean = mean(z)
+pzmed = median(z)
+#make histogram
+hist(z, breaks = 21, xlab = "Number of Crying Children", ylab = "Frequency", main = "Standardized Anomalies Positive Skew Data")
+abline(v=pzmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=pzmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#Transform negative skew data
+#calculate the standard deviation of negative skew data
+std = sd(negskew)
+#calculate standardized anomalies for negative skew
+z = (negskew - negmean)/std
+nzmean = mean(z)
+nzmed = median(z)
+#Make histogram
+hist(z, breaks = 21, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Standardized Anomalies Negative Skew Data")
+abline(v=nzmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nzmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+```
+
+For both the positive and negative skew data the distribution did not change, only the scale. Both shifted to include negative values. These values show how many standard deviations away from the mean a value is.
+
+##Initial data transformed with an exponent
+Next we transform the data with an exponent by squaring the data values. 
+
+```{r}
+#Transform positive skew data
+#take value squared
+epos = posskew^2
+pemean = mean(epos)
+pemed = median(epos)
+#Make histogram
+hist(epos, breaks = 15, xlab = "Number of Crying Children", ylab = "Frequency", main = "Exponential Positive Skew Data")
+abline(v=pemean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=pemed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#Transform negative skew data 
+#take value squared
+eneg = negskew^2
+nemean = mean(eneg)
+nemed = median(eneg)
+#make histogram
+hist(eneg, breaks = 15, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Exponential Negative Skew Data")
+abline(v=nemean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nemed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+```
+
+The positive skew data once again shifts to the left with most transformed data falling in the smallest bin range. The negative skew data was more evenly distributed. Both once again retained mean and median arrangement. 
+
+## Summary
+Okay now we can put it all together. 
+
+```{r, fig.width=8, fig.height=6}
+par(mfrow=c(5,2), mar=c(2,2,2,2)) #setting up a multi-panel figure
+
+#Original Data
+  #postive
+hist(posskew, breaks = 21, xlab = "Number of Crying Children", ylab = "Frequency", main = "Positive Skew Data")
+abline(v=posmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=posmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+  #negative
+hist(negskew, breaks = 21, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Negative Skew Data")
+abline(v=negmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=negmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#Log Scale
+  #postive
+hist(logpos, breaks = 15, xlab = "Number of Children Crying", ylab = "Frequency", main = "Log Positive Skew Data")
+abline(v=plogmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=plogmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue")) 
+  #negative
+hist(logneg, breaks = 15, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Log Negative Skew Data")
+abline(v=nlogmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nlogmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#Box-Cox
+  #postive
+hist(bcpos, breaks = 15, xlab = "Number of Crying Children", ylab = "Frequency", main = "Box Cox Positive Skew Data")
+abline(v=pbcmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=pbcmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+  #negative
+hist(bcneg, breaks = 15, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Box Cox Negative Skew Data")
+abline(v=nbcmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nbcmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#Standardized Anomalies
+  #postive
+hist(z, breaks = 21, xlab = "Number of Crying Children", ylab = "Frequency", main = "Standardized Anomalies Positive Skew Data")
+abline(v=pzmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=pzmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+  #negative
+hist(z, breaks = 21, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Standardized Anomalies Negative Skew Data")
+abline(v=nzmean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nzmed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+
+#Standardized anomalies
+  #positive
+hist(epos, breaks = 15, xlab = "Number of Crying Children", ylab = "Frequency", main = "Exponential Positive Skew Data")
+abline(v=pemean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=pemed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+  #negative
+hist(eneg, breaks = 15, xlab = "Number of Children Stepped On", ylab = "Frequency", main = "Exponential Negative Skew Data")
+abline(v=nemean, col='red', lty=3, lwd=3) #add a vertical line for the mean
+abline(v=nemed, col='blue', lty=3, lwd=3) #add a vertical line for the mean
+#legend('topright', legend=c("mean", "median"), lty=rep(3,4), lwd=rep(3,4), col=c("red","blue"))
+```
+```
+
+From this you can see that transforming skewed data will not change the arrangement of the mean and median. Transformations can have different effects on positive compared to negative skew data.
+<br>
+<br>
+No children were harmed in the making of this presentation
