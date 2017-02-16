@@ -1,0 +1,43 @@
+---
+title: "Histogram Exploration"
+author: "Mariah Taylor and Yaskira Mota"
+date: "February 5, 2017"
+output: html_document
+---
+###Part 1
+We used fish length data that we had available <br>
+Without changing any settings, this is how R represents the data by default <br>
+There are 9 bins with a width of 50 mm
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+data<-read.csv("LT_length_data.csv")
+hist(data$Fish.Length..mm.)
+```
+
+###Part 2
+We can have R Studio control the number of breaks in our code <br>
+There can be fewer bins, but this is not the best way to represent our data because most of the data falls in the 400-600 mm category <br>
+Here, there are 3 bins at 200 mm increments
+```{r cars}
+hist(data$Fish.Length..mm., breaks=2)
+```
+
+###Part 3
+We can also mannually control the number of breaks and bins in our code to better represent the data <br>
+Here we use hashtags (#) to keep track of what our code is doing <br>
+Using the Freedman-Diacobis rule, we found that ~20 bins of ~20 mm increments should be used
+```{r pressure, echo=TRUE}
+#Using the Freedman-Diacobis rule we can find h (bin-width) and the number of bins
+h<-2*IQR(data$Fish.Length..mm.)*(length(data$Fish.Length..mm.)^(-1/3))
+#h=19.87
+#Number of bins should be (max-min/h)
+bins<-(max(data$Fish.Length..mm.)-min(data$Fish.Length..mm.))/h
+#bins=20.58
+hist(data$Fish.Length..mm., breaks=20,xlim=c(200,650), xlab="Fish Length [mm]", ylab="Count", main="Fish Length Histogram")
+box()
+
+```
+
+###Conclusion
+In conclusion, we believe using the Freedman-Diacobis rule helped us to identify the appropriate number of bins and the best way to look at the length-distribution of this fish population <br>
+The first two histograms indicated most of the data was within the same length range while the final histogram provides a more precise estimate that may be important to understand

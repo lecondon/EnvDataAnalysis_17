@@ -1,0 +1,177 @@
+---
+title: 'Homework 1: A comparison of the sensitivity of Variance & Inter Quartile
+  Range'
+output:
+  html_document: default
+  word_document: default
+---
+<h3 style="color:red;"><i>Geoffrey Millard and Charitha Gunawardana</i></h3>
+
+#### CIE 600: Environmental Data Analysis: Scripting Assignment 1<br>
+
+#### 7th February 2017
+<br><br>
+<p>The purpose of this R notebook is to compare the sensitivity of the variance and the inter quartile range(IQR) by manipulating a normally distributed  randomly generated data set. </p>
+### Data Set:
+We start by generating a random normally distributed dataset and then calculating the mean, <font color="red">variance</font> and <font color="blue">IQR</font> of the data.
+
+```{r setup, include=T}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(25) # set the starting point for the random number generator so that we will have reproducible data
+data <- rnorm(50) # generate a normally distributed dataset 
+xbar <- mean(data) # calculate the mean
+variance <- (sum((data-xbar)^2))/(length(data)-1) # calculate the variance
+IQR <- boxplot(data,plot=F)$stats[4,]-boxplot(data,plot=F)$stats[2,] # find the IQR
+spread <- data.frame(Distributrion=c('normal','additional','double','outlier','exp'),variance=NA,IQR=NA) # generate a data.frame to store variance and IQR for each change made to the original data set for later use
+spread$variance[1] <- variance;spread$IQR[1] <- IQR
+```
+
+The variance was found to be <font color="red">~0.968</font> while the IQR was <font color="blue">1.394</font><br>
+<br>
+Next we generate a histogram of the data with boxes indicating the variance and IQR
+
+```{r histrogram, include=T}
+hist(data,breaks=seq(-3,3,0.2),freq=F,ann=F)
+box()
+abline(v=xbar,lwd=2)
+title(ylab='Probability Density',xlab = 'Random Values')
+rect(xbar-IQR,0,xbar+IQR,0.73,col='#3182bd50')
+rect(xbar-variance,-0,xbar+variance,0.73,col='#de2d2650',density=-100)
+
+d <- density(data, adjust=1, kernel='biweight')
+lines(d$x,d$y,col=2)
+legend('topright',c('Variance','IQR','Mean','Density'),pch=c(15,15,NA,NA),lty=c(NA,NA,1,1),col=c('#de2d2650','#3182bd50',1,2),lwd=c(NA,NA,2,1),inset=0.015)
+```
+<br>
+We can see from the above plot that the <b>IQR is greater than the variance</b> in this dataset.<br>
+<br>
+
+Next we will shift the data to see how sensitive these measures of spread are.<br>
+<ol>
+<li>Adding 5 to each point</li>
+<li>Multiplying each point by 2</li>
+<li>Adding outliers</li>
+<li>Taking the exponential values of the data</li>
+</ol>
+
+### Lets add 5 to each data point:
+<br>
+The new output for the increased data looks like,
+```{r, added, include=T}
+adddata <- data+5 # adds 5 to each data
+xbar <- mean(adddata) # calculate the mean
+variance <- (sum((adddata-xbar)^2))/(length(adddata)-1) # calculate the variance
+IQR <- boxplot(adddata,plot=F)$stats[4,]-boxplot(adddata,plot=F)$stats[2,] # find the IQR
+spread$variance[2] <- variance;spread$IQR[2] <- IQR
+
+hist(adddata,breaks=seq(2,8,0.2),freq=F,ann=F)
+box()
+abline(v=xbar,lwd=2)
+title(ylab='Probability Density',xlab = 'Added Random Values')
+rect(xbar-IQR,0,xbar+IQR,1.3,col='#3182bd50')
+rect(xbar-variance,-0,xbar+variance,1.3,col='#de2d2650',density=-100)
+
+d <- density(adddata, adjust=1, kernel='biweight')
+lines(d$x,d$y,col=2)
+legend('topright',c('Variance','IQR','Mean','Density'),pch=c(15,15,NA,NA),lty=c(NA,NA,1,1),col=c('#de2d2650','#3182bd50',1,2),lwd=c(NA,NA,2,1),inset=0.015)
+```
+<br>
+By adding an equal value to each data point (shifting), we can see that the <b>varience and the IQR are the same as the original value</b> which was 0.968 and 1.394
+
+###Lets multiply each data point by 2:
+<br>
+The new output for the multiplied data looks like,
+```{r, double, include=T}
+dubdata <- data*2 # double the values
+xbar <- mean(dubdata) # calculate the mean
+variance <- (sum((dubdata-xbar)^2))/(length(dubdata)-1) # calculate the variance
+IQR <- boxplot(dubdata,plot=F)$stats[4,]-boxplot(dubdata,plot=F)$stats[2,] # find the IQR
+spread$variance[3] <- variance;spread$IQR[3] <- IQR
+
+hist(dubdata,breaks=seq(-6,7,0.5),freq=F,ann=F,ylim=range(0,0.35))
+box()
+abline(v=xbar,lwd=2)
+title(ylab='Probability Density',xlab = 'Doubled Random Values')
+rect(xbar-variance,-0,xbar+variance,1.3,col='#de2d2650',density=-100)
+rect(xbar-IQR,0,xbar+IQR,1.3,col='#3182bd50')
+
+d <- density(dubdata, adjust=1, kernel='biweight')
+lines(d$x,d$y,col=2)
+legend('topright',c('Variance','IQR','Mean','Density'),pch=c(15,15,NA,NA),lty=c(NA,NA,1,1),col=c('#de2d2650','#3182bd50',1,2),lwd=c(NA,NA,2,1),inset=0.015)
+```
+<br>
+By multiplying the data points by 2, we can see that variance has increased to <font color="red">3.87</font> (4 times the original variance), while IQR has doubled in to <font color="blue">2.787</font>
+
+### Lets add a few outliers to the data set: 
+<br>
+The new output for the added outliers data set looks like,
+```{r, outliers, include=T}
+outdata <- c(data,11,7,15) # add outliers
+xbar <- mean(outdata) # calculate the mean
+variance <- (sum((outdata-xbar)^2))/(length(outdata)-1) # calculate the variance
+IQR <- boxplot(outdata,plot=F)$stats[4,]-boxplot(outdata,plot=F)$stats[2,] # find the IQR
+spread$variance[4] <- variance;spread$IQR[4] <- IQR
+
+hist(outdata,breaks=seq(-8,16,0.5),freq=F,ann=F)
+box()
+abline(v=xbar,lwd=2)
+title(ylab='Probability Density',xlab = 'Random Values with outliers')
+rect(xbar-variance,-0,xbar+variance,1.3,col='#de2d2650',density=-100)
+rect(xbar-IQR,0,xbar+IQR,1.3,col='#3182bd50')
+
+d <- density(outdata, adjust=1, kernel='biweight')
+lines(d$x,d$y,col=2)
+legend('topright',c('Variance','IQR','Mean','Density'),pch=c(15,15,NA,NA),lty=c(NA,NA,1,1),col=c('#de2d2650','#3182bd50',1,2),lwd=c(NA,NA,2,1),inset=0.015)
+```
+<br>
+Adding three outliers dramatically increased the variance to <font color="red">8.371</font> while the IQR remained almost unchanged at <font color="blue">1.521</font>
+
+### Lets increasing the data points to their exponentials:
+<br>
+The new output for the exponential data looks like,
+```{r, exponential, include=T}
+expdata <- exp(data) # exponential
+xbar <- mean(expdata) # calculate the mean
+variance <- (sum((expdata-xbar)^2))/(length(expdata)-1) # calculate the variance
+IQR <- boxplot(expdata,plot=F)$stats[4,]-boxplot(expdata,plot=F)$stats[2,] # find the IQR
+spread$variance[5] <- variance;spread$IQR[5] <- IQR
+
+hist(expdata,breaks=seq(-2,12,0.2),freq=F,ann=F)
+box()
+abline(v=xbar,lwd=2)
+title(ylab='Probability Density',xlab = 'exp(Random Values)')
+rect(xbar-variance,-0,xbar+variance,1.3,col='#de2d2650',density=-100)
+rect(xbar-IQR,0,xbar+IQR,1.3,col='#3182bd50')
+
+d <- density(expdata, adjust=1, kernel='biweight')
+lines(d$x,d$y,col=2)
+legend('topright',c('Variance','IQR','Mean','Density'),pch=c(15,15,NA,NA),lty=c(NA,NA,1,1),col=c('#de2d2650','#3182bd50',1,2),lwd=c(NA,NA,2,1),inset=0.015)
+```
+<br>
+Taking the exponent of the data results in a positive skewness, a much higher variance of <font color="red">3.063</font>, and a slightly smaller IQR of <font color="blue">1.069</font>.
+<br>
+
+### Summary:
+<p>Variance and IQR for each change in the data set was recorded to a data.frame. The <b>difference</b> in variance and IQR from the original distribution is summarized in the table below.</P>
+```{r, summary1, include=T, warning=FALSE}
+temp <- data.matrix(spread) #creating a matix from the data.frame
+temp <- temp[-c(1),] #removing first row
+temp <- temp[,-1] #removing first column
+temp <- sweep(temp,2,temp[1,]) #substracting original value from each data
+Fspread <- data.frame(Distributrion=c('additional','double','outlier','exp'),variance=temp[,1],IQR=temp[,2]) #creating new data.frame with edited data
+library(gridExtra) #calling gridExtra package
+grid.table(Fspread) #drawing the table using new data.frame
+
+plot(Fspread$variance, type="o", col="red", ylim=c(0,10), axes=FALSE, ann=FALSE) #plotting variance data
+lines(Fspread$IQR, type="o", pch=22, lty=2, col="blue") #plotting IQR line on same graph
+axis(1, at=1:4, lab=c("Add","Multi","Outliers","Exp"))
+axis(2, at=0:10)
+title(ylab="Change in Value")
+legend(1, 10, c("Variance","IQR"), cex=0.8, col=c("red","blue"), pch=21:22, lty=1:2)
+box()
+```
+<p><b>This table and the above figures clearly demonstrate that IQR is much less sensitive to extreme values than the variance.</b>
+<br>
+<br>
+<br>
+<br>

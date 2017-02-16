@@ -1,0 +1,189 @@
+---
+title: "Homework 1"
+output:
+  html_document: default
+  html_notebook: default
+---
+## Topic 5: Logarithmic Transforms
+##### by Yige Yang, Changcheng Pu, and Karyn Ehmann
+###### 02/07/2017
+
+Log normal distributions are normally distributed after the log transform. We are starting with a dataset named "data_log" that is normally distributed with a mean of zero and a standard deviation of one. The dataset before the log distribution is then named "data" and is the exponent of "data_log". 
+
+
+```{r}
+data_log = rnorm(100,0,1) #the dataset after log transform
+data = exp(data_log) #the dataset before log transform
+hist(data_log, main = "Log Normal Distrubted Data", freq = F, ylab= 'Probability Density', breaks = 20)
+box()
+```
+
+Here is an idea of how the log normal transformed dataset looks. 
+
+```{r}
+hist(data, main = "Exponential of Log Normal\n Distributed Data", freq = F, ylab = 'Probability Density', breaks = 20)
+box()
+```
+
+Here is an idea of how the positively skewed data prior to the log transform looks.
+
+#Central Tendency
+
+###Before the Log Transform
+```{r}
+#mean
+mean = mean(data) 
+
+#trimmed mean
+meanT10=mean(data, 0.1)
+meanT20=mean(data, 0.2)
+
+#median
+median=median(data)
+
+#hist and density & plot
+d = density(data)
+hist1=hist(data, freq=F, breaks=20, plot=T, ylab="Probability Density", main="Before Log Transform") 
+lines(d$x, d$y, col='red',lwd=2)
+box()
+abline(v=mean, col='orangered1', lty=5, lwd=2) 
+abline(v=meanT10, col='mediumorchid3', lty=5, lwd=2) 
+abline(v=meanT20, col='midnightblue', lty=5, lwd=2) 
+abline(v=median, col='springgreen4', lty=5, lwd=2) 
+legend('topright', legend=c(paste("mean = ", round(mean,2)), paste("mean trim 10% = ", round(meanT10,2)), paste("mean trim 20% = ", round(meanT20,2)), paste("median = ", round(median,2))), lty=rep(2,2), lwd=rep(2,2), col=c("orangered1","mediumorchid3", "midnightblue", "springgreen4"))
+
+```
+Before log transformation, mean is larger than median and is right skewed due to outliners. Trimmed means are more robust to outlines and are closer but still larger than median.
+
+###After the Log Transform
+```{r}
+#mean
+mean_log = mean(data_log) 
+
+#trimmed mean
+meanT10_log=mean(data_log, 0.1)
+meanT20_log=mean(data_log, 0.2)
+
+#median
+median_log=median(data_log)
+
+#hist and density & plot
+d_log = density(data_log)
+hist1=hist(data_log, freq=F, breaks=20, plot=T, ylab="Probability Density", main="After Log Transform") 
+lines(d_log$x, d_log$y, col='red',lwd=2)
+box()
+abline(v=mean_log, col='orangered1', lty=5, lwd=2) 
+abline(v=meanT10_log, col='mediumorchid3', lty=5, lwd=2) 
+abline(v=meanT20_log, col='midnightblue', lty=5, lwd=2) 
+abline(v=median_log, col='springgreen4', lty=5, lwd=2) 
+legend('topright', legend=c(paste("mean = ", round(mean_log,2)), paste("mean trim 10% = ", round(meanT10_log,2)), paste("mean trim 20% = ", round(meanT20_log,2)), paste("median = ", round(median_log,2))), lty=rep(2,2), lwd=rep(2,2), col=c("orangered1","mediumorchid3", "midnightblue", "springgreen4"))
+
+```
+
+After the log transform, the probability figure is closer to a normall distribution. peak density occurs in the middle and no tail on either side. Median and mean stay in the center of the plot, close to each other. Trimmed means are very close to mean.
+
+
+
+#Spread
+
+###Before the Log Transform
+```{r}
+#variance
+var1 = var(data)
+
+#standard deviation
+sd1 = sd(data)
+
+#inter-quartile range
+iqr1 = IQR(data)
+iqr1
+
+#mean absolute deviation
+library('lsr')
+mean_ad1 = aad(data)
+
+#median absolute deviation
+median_ad1 = mad(data, constant = 1)
+
+#spread on a histogram
+hist(data, breaks = 20, main = 'Before Log Transform', ylab = "Probability Density", freq = F)
+box()
+lines(x = quantile(data, c(0.25,0.75)), y = c(0.1,0.1), col = 'blue', lty = 1, lwd = 3)
+lines(x = c(mean+sd1, mean-sd1), y = c(0.2,0.2), col = 'red', lty = 1, lwd = 2 )
+legend('topright', legend = c('IQR', 'Mean +/- 1 SD'), lwd = c(3,2), 
+       lty = c(1,1), col = c('blue', 'red'))
+
+```
+
+Before the log transform, the dataset is solely positive with a large range. The mean +/- standard deviation is larger than the interquartile range. Spread of data is not a robust statistic and is impacted by the positive skew. 
+
+###After the Log Transform
+
+```{r}
+#variance
+var2 = var(data_log)
+
+#standard deviation
+sd2 = sd(data_log)
+
+#inter-quartile range
+iqr2 = IQR(data_log)
+
+#mean absolute deviation
+mean_ad2 = aad(data_log)
+
+#median absolute deviation
+median_ad2 = mad(data_log, constant = 1)
+
+#spread on a histogram
+hist(data_log, breaks = 20, main = 'After Log Transform', ylab = "Probability Density", freq = F)
+box()
+lines(x = quantile(data_log, c(0.25,0.75)), y = c(0.1,0.1), col = 'blue', lty = 1, lwd = 3)
+lines(x = c(mean_log+sd2, mean_log-sd2), y = c(0.2,0.2), col = 'red', lty = 1, lwd = 2 )
+legend('topright', legend = c('IQR', 'Mean +/- 1 SD'), lwd = c(3,2), 
+       lty = c(1,1), col = c('blue', 'red'))
+```
+
+After the log transform, the data is normally distributed around the mean. The interquartile range and mean +/- one standard deviation are smaller in range compared to the data prior to the tranform. Spread is not impacted by the skew of data because the data was tranformed to be normally distributed. Therefore, the log tranformation successfully pulls in a skewed dataset in order to better understand spread.  
+
+$Symmetry
+
+###Before the Log Transform
+```{r}
+#skewness
+library('moments')
+sk0=skewness(data)
+sk0
+np=length(data)
+sk1=(1/(np-1))*sum((data-mean(data))^3)/(sd(data)^3)
+sk1
+
+#Yule-Kendall index
+quants=quantile(data, c(0.25, 0.5, 0.75))
+skYK=((quants[3]-quants[2])-(quants[2]-quants[1]))/(quants[3]-quants[1])
+skYK
+```
+From the density histogram, before log transformation, mean is larger than median. It shows a long right tail, which means positive skew. The skewness is 1.67 and Yule-Kendal index is 0.51
+
+###After the Log Transform
+
+```{r}
+#skewness
+sk0_log=skewness(data_log)
+sk0_log
+np_log=length(data_log)
+sk1_log=(1/(np-1))*sum((data_log-mean(data_log))^3)/(sd(data_log)^3)
+sk1_log
+
+#Yule-Kendall index
+quants_log=quantile(data_log, c(0.25, 0.5, 0.75))
+skYK_log=((quants[3]-quants[2])-(quants[2]-quants[1]))/(quants[3]-quants[1])
+skYK_log
+```
+After log transformation, the graph is more symmetric, mean moves closer to median. The skewness is -0.18 and Yule-Kendal index is 0.51. The skewness moves from positive to slightly negative after log transformation. 
+
+
+Overall, the log transform drastically changes the distribution of data and is useful when interpreting positively skewed datasets. The central tendency, spread, and symmetry are altered when the log transform is applied and the log normal distributed data is able to better represent the data as a whole. 
+
+
+
