@@ -3,12 +3,29 @@
 
 library(MASS)
 
+
 ####################################################################################
 # Read in Data
 ####################################################################################
-data=matrix(scan("aismr.txt"),ncol=13,byrow=T)
+data=matrix(scan("aismr.txt", skip=0),ncol=13,byrow=T)
 #Indian monthly rainfall
 #first column is the year next columns are monthly rainfall values
+
+#other helpful stuff
+ yearpick=which(data[,1]>1950 & data[,1]<1980)
+ newdata=data[yearpick,]
+ 
+
+for(i in 1:12){
+	print(i)
+	xtemp=data[,(i+1)]
+	print(mean(xtemp))
+	fout=paste("plot",i,".pdf", sep="")
+	pdf(fout, width=8, height=8)
+	plot(1:10, i:(i+9))
+	dev.off()
+}
+
 xdata=data[,11] #selecting one month of data 
 N=length(xdata)		#number of data points.
 
@@ -30,10 +47,10 @@ neval=length(xeval)
 
 
 #lognormal
-xdensityorig=dlnorm(xeval,meanlog=mean(log(xdata)), sdlog=sd(log(xdata)))
+xdensityorig2=dlnorm(xeval,meanlog=mean(log(xdata)), sdlog=sd(log(xdata)))
 
 #normal
-#xdensityorig=dnorm(xeval,meanlog=mean(xdata), sdlog=sd(xdata))
+#xdensityorig2=dnorm(xeval,meanlog=mean(xdata), sdlog=sd(xdata))
 
 #exponential
 #xdensityorig=dexp(xeval,rate=1/mean(xdata))
@@ -57,7 +74,7 @@ title(main="Fitted PDF")
 
 # Empirical or SAMPLE quantiles and Empirical Percentiles..
 empquant = sort(xdata)
-emppercent = 1:N/(N+1)		#Weibull plotting position
+emppercent = 1:N/(N+1)		
 
 # Get the quantiles corresponding to the empirical percentiles from the fitted
 # PDF model
