@@ -57,13 +57,48 @@ zz=arima0(Nilets, order=c(2,0,1)) #ARMA(2,1)
 zz$coef
 zz$sigma2  #variance of residuals using MLE estimate
 
+#### Spectral analysis
+l=128
+t=seq(0,128,0.1)
+k=3
+a=1
+y=a*sin(2*pi*k/l*t)
+plot(t,y, type='l')
+
+k=2
+a=0.25
+y=a*sin(2*pi*k/l*t)
+lines(t,y, col='blue')
+
+klist=c(5,7,19,36)
+ampS=c(2,0.5, 1, 5)
+ampC=c(5,1,1,1)
+
+outputS=outputC=matrix(0,nrow=length(t), ncol=4)
+#par(mfrow=c(length(klist)+1,1), mar=c(1,1,1,1))
+for(i in 1:(length(klist))){
+	outputS[,i]=ampS[i]*sin(2*pi*klist[i]/l*t)
+	outputC[,i]=ampC[i]*cos(2*pi*klist[i]/l*t)
+	#quartz()
+	plot(t,outputS[,i], type='l', col='blue', ylim=c(-5,5), ylab="amp")
+	lines(t, outputC[,i], col="green")
+}
+
+result=apply(outputS,1,sum)+apply(outputC,1,sum)
+plot(t, result, type='l', col='black', ylab="amp")
 
 
+#fourier transform to make a periodogram
+fft=abs(fft(result)/sqrt(128))^2
+P=1/128*fft[1:65]
+f=(0:64)/128
+plot(f,P, type='l')
+abline(v=klist/128, col=2)
 
 
-
-
-
+data(Nile)
+quartz()
+spectrum(Nile, log='no', taper=0)
 
 
 
